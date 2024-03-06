@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="OpeningAs an SRE, we dedicate a significant amount of time to managing Kubernetes. Throughout the day, we repeatedly execute kubectl commands. However, do we truly comprehend what transpires with each">
+<meta property="og:type" content="article">
+<meta property="og:title" content="What happens after we create a Deployment in Kubernetes?">
+<meta property="og:url" content="http://example.com/2024/03/06/What-happens-after-we-create-a-Deployment-in-Kubernetes/index.html">
+<meta property="og:site_name" content="Imo Liu Blog">
+<meta property="og:description" content="OpeningAs an SRE, we dedicate a significant amount of time to managing Kubernetes. Throughout the day, we repeatedly execute kubectl commands. However, do we truly comprehend what transpires with each">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://hackmd.io/_uploads/BJm_j0Bap.png">
+<meta property="og:image" content="https://hackmd.io/_uploads/ryeKiCBTa.png">
+<meta property="article:published_time" content="2024-03-06T13:37:19.000Z">
+<meta property="article:modified_time" content="2024-03-06T15:38:11.554Z">
+<meta property="article:author" content="Imo Liu">
+<meta property="article:tag" content="Kubernetes">
+<meta property="article:tag" content="DevOps">
+<meta property="article:tag" content="SRE">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hackmd.io/_uploads/BJm_j0Bap.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>What happens after we create a Deployment in Kubernetes?</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2024/03/06/What-happens-after-we-create-a-Deployment-in-Kubernetes/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2024/03/06/What-happens-after-we-create-a-Deployment-in-Kubernetes/&text=What happens after we create a Deployment in Kubernetes?"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2024/03/06/What-happens-after-we-create-a-Deployment-in-Kubernetes/&title=What happens after we create a Deployment in Kubernetes?"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2024/03/06/What-happens-after-we-create-a-Deployment-in-Kubernetes/&is_video=false&description=What happens after we create a Deployment in Kubernetes?"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=What happens after we create a Deployment in Kubernetes?&body=Check out this article: http://example.com/2024/03/06/What-happens-after-we-create-a-Deployment-in-Kubernetes/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2024/03/06/What-happens-after-we-create-a-Deployment-in-Kubernetes/&title=What happens after we create a Deployment in Kubernetes?"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2024/03/06/What-happens-after-we-create-a-Deployment-in-Kubernetes/&title=What happens after we create a Deployment in Kubernetes?"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2024/03/06/What-happens-after-we-create-a-Deployment-in-Kubernetes/&title=What happens after we create a Deployment in Kubernetes?"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2024/03/06/What-happens-after-we-create-a-Deployment-in-Kubernetes/&title=What happens after we create a Deployment in Kubernetes?"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2024/03/06/What-happens-after-we-create-a-Deployment-in-Kubernetes/&name=What happens after we create a Deployment in Kubernetes?&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2024/03/06/What-happens-after-we-create-a-Deployment-in-Kubernetes/&t=What happens after we create a Deployment in Kubernetes?"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Opening"><span class="toc-number">1.</span> <span class="toc-text">Opening</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Getting-Started"><span class="toc-number">2.</span> <span class="toc-text">Getting Started !</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Kubectl"><span class="toc-number">2.1.</span> <span class="toc-text">Kubectl</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#API-server"><span class="toc-number">2.2.</span> <span class="toc-text">API server</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Control-Plane-Journey"><span class="toc-number">3.</span> <span class="toc-text">Control Plane Journey</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Controller-Manager"><span class="toc-number">3.1.</span> <span class="toc-text">Controller Manager</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Kube-Scheduler"><span class="toc-number">3.2.</span> <span class="toc-text">Kube Scheduler</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Kubelet"><span class="toc-number">3.3.</span> <span class="toc-text">Kubelet</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Conclusion"><span class="toc-number">4.</span> <span class="toc-text">Conclusion</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Ref"><span class="toc-number">4.1.</span> <span class="toc-text">Ref</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        What happens after we create a Deployment in Kubernetes?
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Imo Liu</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-03-06T13:37:19.000Z" class="dt-published" itemprop="datePublished">2024-03-06</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/DevOps/" rel="tag">DevOps</a>, <a class="p-category" href="/tags/Kubernetes/" rel="tag">Kubernetes</a>, <a class="p-category" href="/tags/SRE/" rel="tag">SRE</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="Opening"><a href="#Opening" class="headerlink" title="Opening"></a>Opening</h2><p>As an SRE, we dedicate a significant amount of time to managing Kubernetes. Throughout the day, we repeatedly execute kubectl commands. However, do we truly comprehend what transpires with each command we enter? In this post, we will demystify the interactions among various components in Kubernetes by dissecting the most commonly used command in our daily workflows. Let’s dive in!</p>
+<h2 id="Getting-Started"><a href="#Getting-Started" class="headerlink" title="Getting Started !"></a>Getting Started !</h2><p>Imagine that we have a YAML file like this.</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># deployment.yaml</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nginx-deployment</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">nginx</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">3</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> <span class="string">nginx</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">nginx</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line">        <span class="attr">image:</span> <span class="string">nginx:1.14.2</span></span><br><span class="line">        <span class="attr">ports:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">80</span></span><br></pre></td></tr></table></figure>
+<p>And let’s explore what happens after we run <code>kubectl apply -f deployment.yaml</code>.</p>
+<p>In the first part, two components take part in these actions: <strong>kubectl</strong> and the <strong>API server</strong>.</p>
+<h3 id="Kubectl"><a href="#Kubectl" class="headerlink" title="Kubectl"></a>Kubectl</h3><p>Before successfully sending the YAML manifest to the API server, <code>kubectl</code> handles several tasks locally.</p>
+<ol>
+<li><strong>Client Auth</strong> : Before interacting with the API server, <code>kubectl</code> needs to prove itself as a valid client. It uses the token or username&#x2F;password defined inside the <code>kubeconfig</code> to decorate the HTTP request appropriately.</li>
+<li><strong>Spec validation</strong> : After successful authentication, <code>kubectl</code> processes the YAML, validating the spec to avoid sending incorrect requests and wasting API server resources.</li>
+<li><strong>Version negotiation</strong> : Although the spec is examined locally, <code>kubectl</code> checks the API version available on the target API server. This step is necessary as the <code>apiVersion</code> field may be set to a version unsupported by the API server.</li>
+</ol>
+<h3 id="API-server"><a href="#API-server" class="headerlink" title="API server"></a>API server</h3><p>Once the local tasks are completed, kubectl sends the request to the API server, triggering the following actions.</p>
+<ol>
+<li><strong>Authetication</strong> : The API server checks the provided token in the HTTP header. If it fail, you will receive a <code>401 Unauthorized</code> response.</li>
+<li><strong>Authorization</strong> : After successful authentication, it doesn’t guarantee the ability to perform the desired action. In this step, the API server checks the role bound to your user or group. If you lack permission for the action, you’ll receive a <code>403 Forbidden</code> response. In this scenario, <code>create</code> permission for the <code>deployment</code> resource is required.</li>
+<li><strong>Admission controllers</strong> :  Admission controllers operate using two sets of webhooks: the <code>Mutation Webhook</code> and the <code>Validation Webhook</code>. The <code>Mutating admission</code> webhooks are the first to be invoked, allowing them to modify objects sent to the API server. This capability is instrumental in achieving features like sidecar container injection. Subsequent to the <code>Mutation Webhook</code>, the <code>Validation Webhook</code> is invoked. It has the authority to reject requests, thereby enforcing custom policies.</li>
+<li><strong>Store to Etcd</strong> : If we successfully pass all the validations, congratulations! The API server stores this object in ETCD and persists it. On the client side, we receive a <code>201 Created</code> status code!</li>
+</ol>
+<p><img src="https://hackmd.io/_uploads/BJm_j0Bap.png" alt="image"></p>
+<h2 id="Control-Plane-Journey"><a href="#Control-Plane-Journey" class="headerlink" title="Control Plane Journey"></a>Control Plane Journey</h2><p>After <code>Depolyment</code> object is storing in ETCD, the control plane starts its work.</p>
+<h3 id="Controller-Manager"><a href="#Controller-Manager" class="headerlink" title="Controller Manager"></a>Controller Manager</h3><p>Initially, the Controller Manager responds to this. It contains a set of Controllers that watch specific resources and take appropriate actions.</p>
+<ol>
+<li><strong>Reconcile resource</strong> :  In this scenario, the Deployment Controller reconciles the <code>Deployment</code> spec to create a <code>ReplicaSet</code>, ensuring that the state of the <code>ReplicaSet</code> matches what we declare in the <code>Deployment</code>. Additionally, the ReplicaSet Controller undertakes the reconciliation of the <code>ReplicaSet</code> object to adjust the Pod numbers.</li>
+<li><strong>Create Pod</strong> : Once the <code>ReplicaSet Controller</code> determines the number of Pods to create (in this case, it’s 3), it sends an HTTP request to the API server to create the Pods. Following the same process discussed in the <code>kubectl</code> part, the API server performs the same steps and ultimately persists the Pod resource to ETCD.</li>
+</ol>
+<h3 id="Kube-Scheduler"><a href="#Kube-Scheduler" class="headerlink" title="Kube Scheduler"></a>Kube Scheduler</h3><p>At this moment, our Pods are stranded in a <code>Pending</code> status because they haven’t been scheduled to a node yet. The sole responsibility of the scheduler is to configure the appropriate node in the <code>spec.nodename</code> field within their PodSpec.</p>
+<ol>
+<li><strong>Fliter Node</strong> : In this stage, the scheduler filters nodes based on their suitability to host a Pod. For example, nodes lacking sufficient capacity for the Pod’s requested resources will be excluded.</li>
+<li><strong>Score Node</strong> : Then, the scheduler executes a series of functions on the remaining nodes to rank their suitability. After the functions run, the scheduler assigns a score to each node, and the one with the highest score gets selected.</li>
+<li><strong>Create Binding object</strong> : Once the scheduler determines the node, it creates a <code>Binding</code> object containing the Pod’s UID and the selected Node name. This object is then sent as a request to the API server. Upon receiving the request, the API server sets the Node name in the Pod spec (<code>spec.nodename</code>) and updates the <code>PodScheduled</code> status to <code>True</code>.</li>
+</ol>
+<h3 id="Kubelet"><a href="#Kubelet" class="headerlink" title="Kubelet"></a>Kubelet</h3><p>Kubelet is responsible for handling the Pod’s lifecycle on each node. Upon the Kubelet start, it periodically queries Pods from the API server, filtering those whose NodeName matches the name of the node where the kubelet is running. If a new creation event occurs, Kubelet follows these steps to transform an abstract Pod into a running instance.</p>
+<ol>
+<li><strong>Create Pod status</strong> :When Kubelet begins managing the pod, it generates a PodStatus object, displaying the current pod status, including states such as <code>Pending</code>, <code>Running</code>, <code>Succeeded</code>, <code>Failed</code> and <code>Unknown</code>.</li>
+<li><strong>Admit Handler</strong> : Then the a series of admission handlers will to ensure the pod has tha correct permissions. If Pod fail at this step, it will be stuck in the Pending state indefinitely.</li>
+<li><strong>Call CRI &amp; CNI</strong> :  For now, everything is okay. Kubelet will call the CRI to run the actual container. Initially, CRI creates a <code>pause</code> container to manage Linux Namespaces resources. Subsequently, CNI is triggered to perform IP Address Management (IPAM) for assigning an IP to the Pod. With these foundational resources set up, Kubelet ask CRI to start pulling the image defined in the PodSpec and also requests the creation of the container. The container is then started!</li>
+</ol>
+<p><img src="https://hackmd.io/_uploads/ryeKiCBTa.png" alt="image"></p>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>In this post, we introduced the flow from entering the <code>kubectl</code> command to the Pod continuing to run on the node. However, we haven’t delved into every detail, such as how the kubelet sets up the cgroup and the intricacies of CNI&#x2F;CRI operations. But no need to worry; we’ll delve into the specifics of each component in future posts! Stay tuned for more in-depth discussions!</p>
+<h3 id="Ref"><a href="#Ref" class="headerlink" title="Ref"></a>Ref</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/jamiehannaford/what-happens-when-k8s">https://github.com/jamiehannaford/what-happens-when-k8s</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/kubernetes/kubectl">https://github.com/kubernetes/kubectl</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/kubernetes/kubernetes">https://github.com/kubernetes/kubernetes</a></li>
+<li><a target="_blank" rel="noopener" href="https://kubernetes.io/docs/concepts/scheduling-eviction/scheduling-framework/">https://kubernetes.io/docs/concepts/scheduling-eviction/scheduling-framework/</a></li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Opening"><span class="toc-number">1.</span> <span class="toc-text">Opening</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Getting-Started"><span class="toc-number">2.</span> <span class="toc-text">Getting Started !</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Kubectl"><span class="toc-number">2.1.</span> <span class="toc-text">Kubectl</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#API-server"><span class="toc-number">2.2.</span> <span class="toc-text">API server</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Control-Plane-Journey"><span class="toc-number">3.</span> <span class="toc-text">Control Plane Journey</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Controller-Manager"><span class="toc-number">3.1.</span> <span class="toc-text">Controller Manager</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Kube-Scheduler"><span class="toc-number">3.2.</span> <span class="toc-text">Kube Scheduler</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Kubelet"><span class="toc-number">3.3.</span> <span class="toc-text">Kubelet</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Conclusion"><span class="toc-number">4.</span> <span class="toc-text">Conclusion</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Ref"><span class="toc-number">4.1.</span> <span class="toc-text">Ref</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2024/03/06/What-happens-after-we-create-a-Deployment-in-Kubernetes/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2024/03/06/What-happens-after-we-create-a-Deployment-in-Kubernetes/&text=What happens after we create a Deployment in Kubernetes?"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2024/03/06/What-happens-after-we-create-a-Deployment-in-Kubernetes/&title=What happens after we create a Deployment in Kubernetes?"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2024/03/06/What-happens-after-we-create-a-Deployment-in-Kubernetes/&is_video=false&description=What happens after we create a Deployment in Kubernetes?"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=What happens after we create a Deployment in Kubernetes?&body=Check out this article: http://example.com/2024/03/06/What-happens-after-we-create-a-Deployment-in-Kubernetes/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2024/03/06/What-happens-after-we-create-a-Deployment-in-Kubernetes/&title=What happens after we create a Deployment in Kubernetes?"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2024/03/06/What-happens-after-we-create-a-Deployment-in-Kubernetes/&title=What happens after we create a Deployment in Kubernetes?"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2024/03/06/What-happens-after-we-create-a-Deployment-in-Kubernetes/&title=What happens after we create a Deployment in Kubernetes?"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2024/03/06/What-happens-after-we-create-a-Deployment-in-Kubernetes/&title=What happens after we create a Deployment in Kubernetes?"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2024/03/06/What-happens-after-we-create-a-Deployment-in-Kubernetes/&name=What happens after we create a Deployment in Kubernetes?&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2024/03/06/What-happens-after-we-create-a-Deployment-in-Kubernetes/&t=What happens after we create a Deployment in Kubernetes?"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2024
+    Imo Liu
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
