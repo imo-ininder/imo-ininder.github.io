@@ -13,16 +13,16 @@
 <meta property="og:site_name" content="Imo Liu Blog">
 <meta property="og:description" content="OpeningAs an SRE, we dedicate a significant amount of time to managing Kubernetes. Throughout the day, we repeatedly execute kubectl commands. However, do we truly comprehend what transpires with each">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://hackmd.io/_uploads/BJm_j0Bap.png">
-<meta property="og:image" content="https://hackmd.io/_uploads/ryeKiCBTa.png">
+<meta property="og:image" content="https://hackmd.io/_uploads/B1g6D1zITT.png">
+<meta property="og:image" content="https://hackmd.io/_uploads/HyRUlM8Ta.png">
 <meta property="article:published_time" content="2024-03-06T13:37:19.000Z">
-<meta property="article:modified_time" content="2024-03-06T15:38:11.554Z">
+<meta property="article:modified_time" content="2024-03-06T15:49:29.344Z">
 <meta property="article:author" content="Imo Liu">
 <meta property="article:tag" content="Kubernetes">
 <meta property="article:tag" content="DevOps">
 <meta property="article:tag" content="SRE">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://hackmd.io/_uploads/BJm_j0Bap.png">
+<meta name="twitter:image" content="https://hackmd.io/_uploads/B1g6D1zITT.png">
     
     
       
@@ -159,10 +159,10 @@
   
 
   <div class="content e-content" itemprop="articleBody">
-    <h2 id="Opening"><a href="#Opening" class="headerlink" title="Opening"></a>Opening</h2><p>As an SRE, we dedicate a significant amount of time to managing Kubernetes. Throughout the day, we repeatedly execute kubectl commands. However, do we truly comprehend what transpires with each command we enter? In this post, we will demystify the interactions among various components in Kubernetes by dissecting the most commonly used command in our daily workflows. Let’s dive in!</p>
+    <h2 id="Opening"><a href="#Opening" class="headerlink" title="Opening"></a>Opening</h2><p>As an SRE, we dedicate a significant amount of time to managing Kubernetes. Throughout the day, we repeatedly execute <code>kubectl</code> commands. However, do we truly comprehend what transpires with each command we enter? In this post, we will demystify the interactions among various components in Kubernetes by dissecting the most commonly used command in our daily workflows. Let’s dive in!</p>
 <h2 id="Getting-Started"><a href="#Getting-Started" class="headerlink" title="Getting Started !"></a>Getting Started !</h2><p>Imagine that we have a YAML file like this.</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># deployment.yaml</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nginx-deployment</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">nginx</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">3</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> <span class="string">nginx</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">nginx</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line">        <span class="attr">image:</span> <span class="string">nginx:1.14.2</span></span><br><span class="line">        <span class="attr">ports:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">80</span></span><br></pre></td></tr></table></figure>
-<p>And let’s explore what happens after we run <code>kubectl apply -f deployment.yaml</code>.</p>
+<p>Seem familiar, doesn’t it?<br>And let’s explore what happens after we run <code>kubectl apply -f deployment.yaml</code>.</p>
 <p>In the first part, two components take part in these actions: <strong>kubectl</strong> and the <strong>API server</strong>.</p>
 <h3 id="Kubectl"><a href="#Kubectl" class="headerlink" title="Kubectl"></a>Kubectl</h3><p>Before successfully sending the YAML manifest to the API server, <code>kubectl</code> handles several tasks locally.</p>
 <ol>
@@ -177,7 +177,7 @@
 <li><strong>Admission controllers</strong> :  Admission controllers operate using two sets of webhooks: the <code>Mutation Webhook</code> and the <code>Validation Webhook</code>. The <code>Mutating admission</code> webhooks are the first to be invoked, allowing them to modify objects sent to the API server. This capability is instrumental in achieving features like sidecar container injection. Subsequent to the <code>Mutation Webhook</code>, the <code>Validation Webhook</code> is invoked. It has the authority to reject requests, thereby enforcing custom policies.</li>
 <li><strong>Store to Etcd</strong> : If we successfully pass all the validations, congratulations! The API server stores this object in ETCD and persists it. On the client side, we receive a <code>201 Created</code> status code!</li>
 </ol>
-<p><img src="https://hackmd.io/_uploads/BJm_j0Bap.png" alt="image"></p>
+<p><img src="https://hackmd.io/_uploads/B1g6D1zITT.png" alt="image"></p>
 <h2 id="Control-Plane-Journey"><a href="#Control-Plane-Journey" class="headerlink" title="Control Plane Journey"></a>Control Plane Journey</h2><p>After <code>Depolyment</code> object is storing in ETCD, the control plane starts its work.</p>
 <h3 id="Controller-Manager"><a href="#Controller-Manager" class="headerlink" title="Controller Manager"></a>Controller Manager</h3><p>Initially, the Controller Manager responds to this. It contains a set of Controllers that watch specific resources and take appropriate actions.</p>
 <ol>
@@ -196,7 +196,7 @@
 <li><strong>Admit Handler</strong> : Then the a series of admission handlers will to ensure the pod has tha correct permissions. If Pod fail at this step, it will be stuck in the Pending state indefinitely.</li>
 <li><strong>Call CRI &amp; CNI</strong> :  For now, everything is okay. Kubelet will call the CRI to run the actual container. Initially, CRI creates a <code>pause</code> container to manage Linux Namespaces resources. Subsequently, CNI is triggered to perform IP Address Management (IPAM) for assigning an IP to the Pod. With these foundational resources set up, Kubelet ask CRI to start pulling the image defined in the PodSpec and also requests the creation of the container. The container is then started!</li>
 </ol>
-<p><img src="https://hackmd.io/_uploads/ryeKiCBTa.png" alt="image"></p>
+<p><img src="https://hackmd.io/_uploads/HyRUlM8Ta.png" alt="image"></p>
 <h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>In this post, we introduced the flow from entering the <code>kubectl</code> command to the Pod continuing to run on the node. However, we haven’t delved into every detail, such as how the kubelet sets up the cgroup and the intricacies of CNI&#x2F;CRI operations. But no need to worry; we’ll delve into the specifics of each component in future posts! Stay tuned for more in-depth discussions!</p>
 <h3 id="Ref"><a href="#Ref" class="headerlink" title="Ref"></a>Ref</h3><ul>
 <li><a target="_blank" rel="noopener" href="https://github.com/jamiehannaford/what-happens-when-k8s">https://github.com/jamiehannaford/what-happens-when-k8s</a></li>
