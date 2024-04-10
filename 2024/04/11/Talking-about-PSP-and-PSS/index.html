@@ -15,7 +15,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://hackmd.io/_uploads/SyNc2m4eR.png">
 <meta property="article:published_time" content="2024-04-10T15:05:46.000Z">
-<meta property="article:modified_time" content="2024-04-10T15:46:03.669Z">
+<meta property="article:modified_time" content="2024-04-10T15:46:41.833Z">
 <meta property="article:author" content="Imo Liu">
 <meta property="article:tag" content="Kubernetes">
 <meta property="article:tag" content="Security">
@@ -230,7 +230,7 @@
 </ul>
 <p>This kind of label is the recommended label from the official when we adapt Pod Security Admission for the first time.</p>
 <p>Also, we can use <code>--dry-run</code> to find out if there are pods that violate the policy before we actually apply it.</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># all ns</span></span><br><span class="line">kubectl label --dry-run=server --overwrite ns --all <span class="variable">$ns</span> pod-security.kubernetes.io/enforce=baseline</span><br><span class="line"><span class="comment"># specific ns</span></span><br><span class="line">kubectl label --dry-run=server --overwrite ns <span class="variable">$ns</span> pod-security.kubernetes.io/enforce=baseline</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># all ns</span></span><br><span class="line">kubectl label --dry-run=server --overwrite ns --all pod-security.kubernetes.io/enforce=baseline</span><br><span class="line"><span class="comment"># specific ns</span></span><br><span class="line">kubectl label --dry-run=server --overwrite ns <span class="variable">$ns</span> pod-security.kubernetes.io/enforce=baseline</span><br></pre></td></tr></table></figure>
 
 <p>And there are some easy way for us to choose which policy to enforce on namespace.</p>
 <ul>
