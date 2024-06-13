@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="OpeningIn my previous work managing all the workloads running on Kubernetes, I discovered several key guidelines that are crucial for ensuring the reliability and resilience of applications. These  8">
+<meta property="og:type" content="article">
+<meta property="og:title" content="8 Tips to Ensure Reliable and Resilient Service Deployment">
+<meta property="og:url" content="http://example.com/2023/11/28/8-Tips-to-Ensure-Reliable-and-Resilient-Service-Deployment/index.html">
+<meta property="og:site_name" content="Imo Liu Blog">
+<meta property="og:description" content="OpeningIn my previous work managing all the workloads running on Kubernetes, I discovered several key guidelines that are crucial for ensuring the reliability and resilience of applications. These  8">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-11-28T13:25:48.000Z">
+<meta property="article:modified_time" content="2024-06-13T13:29:57.939Z">
+<meta property="article:author" content="Imo Liu">
+<meta property="article:tag" content="Kubernetes">
+<meta property="article:tag" content="DevOps">
+<meta property="article:tag" content="SRE">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>8 Tips to Ensure Reliable and Resilient Service Deployment</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VDM8X5XB87"></script>
+  <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-VDM8X5XB87');
+  </script>
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2024/03/06/What-happens-after-we-create-a-Deployment-in-Kubernetes/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2023/11/28/8-Tips-to-Ensure-Reliable-and-Resilient-Service-Deployment/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2023/11/28/8-Tips-to-Ensure-Reliable-and-Resilient-Service-Deployment/&text=8 Tips to Ensure Reliable and Resilient Service Deployment"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2023/11/28/8-Tips-to-Ensure-Reliable-and-Resilient-Service-Deployment/&title=8 Tips to Ensure Reliable and Resilient Service Deployment"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2023/11/28/8-Tips-to-Ensure-Reliable-and-Resilient-Service-Deployment/&is_video=false&description=8 Tips to Ensure Reliable and Resilient Service Deployment"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=8 Tips to Ensure Reliable and Resilient Service Deployment&body=Check out this article: http://example.com/2023/11/28/8-Tips-to-Ensure-Reliable-and-Resilient-Service-Deployment/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2023/11/28/8-Tips-to-Ensure-Reliable-and-Resilient-Service-Deployment/&title=8 Tips to Ensure Reliable and Resilient Service Deployment"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2023/11/28/8-Tips-to-Ensure-Reliable-and-Resilient-Service-Deployment/&title=8 Tips to Ensure Reliable and Resilient Service Deployment"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2023/11/28/8-Tips-to-Ensure-Reliable-and-Resilient-Service-Deployment/&title=8 Tips to Ensure Reliable and Resilient Service Deployment"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2023/11/28/8-Tips-to-Ensure-Reliable-and-Resilient-Service-Deployment/&title=8 Tips to Ensure Reliable and Resilient Service Deployment"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2023/11/28/8-Tips-to-Ensure-Reliable-and-Resilient-Service-Deployment/&name=8 Tips to Ensure Reliable and Resilient Service Deployment&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2023/11/28/8-Tips-to-Ensure-Reliable-and-Resilient-Service-Deployment/&t=8 Tips to Ensure Reliable and Resilient Service Deployment"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Opening"><span class="toc-number">1.</span> <span class="toc-text">Opening</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        8 Tips to Ensure Reliable and Resilient Service Deployment
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Imo Liu</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-11-28T13:25:48.000Z" class="dt-published" itemprop="datePublished">2023-11-28</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/DevOps/" rel="tag">DevOps</a>, <a class="p-category" href="/tags/Kubernetes/" rel="tag">Kubernetes</a>, <a class="p-category" href="/tags/SRE/" rel="tag">SRE</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="Opening"><a href="#Opening" class="headerlink" title="Opening"></a>Opening</h2><p>In my previous work managing all the workloads running on Kubernetes, I discovered several key guidelines that are crucial for ensuring the reliability and resilience of applications. These  8 tips come from hands-on experience and numerous trials and errors. If you’re about to create your application, consider following these steps to set yourself up for success:</p>
+<ol>
+<li><p><strong>Set up readiness and liveness probes:</strong></p>
+<ul>
+<li>Define readiness probes to indicate when the container is ready to serve traffic.</li>
+<li>Define liveness probes to determine if the container is still running.</li>
+<li>It’s considered a best practice for liveness probe values not to be the same as the readiness probe.<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">readinessProbe:</span></span><br><span class="line">  <span class="attr">httpGet:</span></span><br><span class="line">    <span class="attr">path:</span> <span class="string">/healthz</span></span><br><span class="line">    <span class="attr">port:</span> <span class="number">3000</span></span><br><span class="line">  <span class="attr">initialDelaySeconds:</span> <span class="number">15</span></span><br><span class="line">  <span class="attr">periodSeconds:</span> <span class="number">10</span></span><br><span class="line">  <span class="attr">failureThreshold:</span> <span class="number">3</span>  </span><br><span class="line">  <span class="attr">successThreshold:</span> <span class="number">1</span>  </span><br><span class="line"><span class="attr">livenessProbe:</span></span><br><span class="line">  <span class="attr">httpGet:</span></span><br><span class="line">    <span class="attr">path:</span> <span class="string">/liveness</span></span><br><span class="line">    <span class="attr">port:</span> <span class="number">3000</span></span><br><span class="line">  <span class="attr">initialDelaySeconds:</span> <span class="number">20</span></span><br><span class="line">  <span class="attr">periodSeconds:</span> <span class="number">15</span></span><br><span class="line">  <span class="attr">failureThreshold:</span> <span class="number">3</span>  </span><br><span class="line">  <span class="attr">successThreshold:</span> <span class="number">1</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p><strong>Ensure more than one replica is running:</strong></p>
+<ul>
+<li>Set the replicas field in your deployment manifest to a value greater than 1 to ensure high availability.</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">3</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Set up resource requests and limits:</strong></p>
+<ul>
+<li>Specify resource requests and limits to ensure proper allocation of resources such as CPU and memory.</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">resources:</span></span><br><span class="line">  <span class="attr">requests:</span></span><br><span class="line">    <span class="attr">memory:</span> <span class="string">&quot;64Mi&quot;</span></span><br><span class="line">    <span class="attr">cpu:</span> <span class="string">&quot;250m&quot;</span></span><br><span class="line">  <span class="attr">limits:</span></span><br><span class="line">    <span class="attr">memory:</span> <span class="string">&quot;128Mi&quot;</span></span><br><span class="line">    <span class="attr">cpu:</span> <span class="string">&quot;500m&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Configure pod anti-affinity:</strong></p>
+<ul>
+<li>Use pod anti-affinity to prevent multiple instances of the same application from running on the same node.</li>
+<li>Utilize <code>preferredDuringSchedulingIgnoredDuringExecution</code>, suggesting Kubernetes to avoid placing pods with the same label on the same node, but not as a strict rule.</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">affinity:</span></span><br><span class="line">  <span class="attr">podAntiAffinity:</span></span><br><span class="line">    <span class="attr">preferredDuringSchedulingIgnoredDuringExecution:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">weight:</span> <span class="number">100</span></span><br><span class="line">        <span class="attr">podAffinityTerm:</span></span><br><span class="line">          <span class="attr">labelSelector:</span></span><br><span class="line">            <span class="attr">matchExpressions:</span></span><br><span class="line">              <span class="bullet">-</span> <span class="attr">key:</span> <span class="string">app</span></span><br><span class="line">                <span class="attr">operator:</span> <span class="string">In</span></span><br><span class="line">                <span class="attr">values:</span></span><br><span class="line">                  <span class="bullet">-</span> <span class="string">&lt;your-app-name&gt;</span></span><br><span class="line">          <span class="attr">topologyKey:</span> <span class="string">&quot;kubernetes.io/hostname&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Setup Pod Disruption Budget (PDB):</strong></p>
+<ul>
+<li>Define a PodDisruptionBudget to ensure a minimum number of instances are available during disruptions like node drain or eviction.</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">policy/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">PodDisruptionBudget</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">example-pdb</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">minAvailable:</span> <span class="number">50</span><span class="string">%</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> <span class="string">&lt;your-app-name&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Implement Rolling Updates and Rollbacks with <code>maxSurge</code> and <code>maxUnavailable</code>:</strong></p>
+<ul>
+<li>Setting <code>maxSurge</code> to 1 and <code>maxUnavailable</code> to 0 will roll pods one by one during the update, ensuring that no pods are unavailable.</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">strategy:</span></span><br><span class="line">    <span class="attr">type:</span> <span class="string">RollingUpdate</span></span><br><span class="line">    <span class="attr">rollingUpdate:</span></span><br><span class="line">      <span class="attr">maxSurge:</span> <span class="number">1</span></span><br><span class="line">      <span class="attr">maxUnavailable:</span> <span class="number">0</span> </span><br></pre></td></tr></table></figure></li>
+<li><p><strong>Setup <code>terminationGracePeriodSeconds</code></strong> :</p>
+</li>
+</ol>
+<ul>
+<li>Adjust the terminationGracePeriodSeconds according to your application’s needs. This grace period allows your application to perform necessary cleanup tasks or finish ongoing processes before it gets forcefully terminated by Kubernetes.</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">containers:</span></span><br><span class="line">  <span class="string">...</span></span><br><span class="line">  <span class="attr">terminationGracePeriodSeconds:</span> <span class="string">&lt;seconds</span> <span class="string">your</span> <span class="string">app</span> <span class="string">need&gt;</span></span><br></pre></td></tr></table></figure>
+<ol start="8">
+<li><strong>Handle SIGTERM for Graceful Shutdown</strong>:</li>
+</ol>
+<ul>
+<li>Ensure your application is properly configured to handle SIGTERM signals for a graceful termination in response to termination requests sent by Kubernetes.</li>
+<li>Implement signal handling within your application to catch SIGTERM signals and perform necessary cleanup or shutdown procedures, such as saving state, releasing resources, or concluding ongoing tasks gracefully.</li>
+</ul>
+<p>Additionally, if your application faces challenges handling SIGTERM directly, consider using a pre-stop webhook to execute a graceful shutdown process if necessary. You can specify a preStop hook in your pod’s lifecycle configuration to run a script or command before the container termination:</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">containers:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">example-container</span></span><br><span class="line">    <span class="attr">lifecycle:</span></span><br><span class="line">      <span class="attr">preStop:</span></span><br><span class="line">        <span class="attr">exec:</span></span><br><span class="line">          <span class="attr">command:</span> [<span class="string">&quot;your-pre-shutdown-script.sh&quot;</span>]  <span class="comment"># Optional script to execute before termination</span></span><br></pre></td></tr></table></figure>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Opening"><span class="toc-number">1.</span> <span class="toc-text">Opening</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2023/11/28/8-Tips-to-Ensure-Reliable-and-Resilient-Service-Deployment/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2023/11/28/8-Tips-to-Ensure-Reliable-and-Resilient-Service-Deployment/&text=8 Tips to Ensure Reliable and Resilient Service Deployment"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2023/11/28/8-Tips-to-Ensure-Reliable-and-Resilient-Service-Deployment/&title=8 Tips to Ensure Reliable and Resilient Service Deployment"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2023/11/28/8-Tips-to-Ensure-Reliable-and-Resilient-Service-Deployment/&is_video=false&description=8 Tips to Ensure Reliable and Resilient Service Deployment"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=8 Tips to Ensure Reliable and Resilient Service Deployment&body=Check out this article: http://example.com/2023/11/28/8-Tips-to-Ensure-Reliable-and-Resilient-Service-Deployment/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2023/11/28/8-Tips-to-Ensure-Reliable-and-Resilient-Service-Deployment/&title=8 Tips to Ensure Reliable and Resilient Service Deployment"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2023/11/28/8-Tips-to-Ensure-Reliable-and-Resilient-Service-Deployment/&title=8 Tips to Ensure Reliable and Resilient Service Deployment"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2023/11/28/8-Tips-to-Ensure-Reliable-and-Resilient-Service-Deployment/&title=8 Tips to Ensure Reliable and Resilient Service Deployment"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2023/11/28/8-Tips-to-Ensure-Reliable-and-Resilient-Service-Deployment/&title=8 Tips to Ensure Reliable and Resilient Service Deployment"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2023/11/28/8-Tips-to-Ensure-Reliable-and-Resilient-Service-Deployment/&name=8 Tips to Ensure Reliable and Resilient Service Deployment&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2023/11/28/8-Tips-to-Ensure-Reliable-and-Resilient-Service-Deployment/&t=8 Tips to Ensure Reliable and Resilient Service Deployment"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2024
+    Imo Liu
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
